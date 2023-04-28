@@ -4,7 +4,6 @@ pragma solidity 0.8.19;
 import {IERC20} from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 
 interface IERC20ASG is IERC20 {
-
     //// @notice mints specified amount to msg.sender requires corresponding value
     //// @param howMany_ number of tokens wanted
     function mint(uint256 howMany_) external payable;
@@ -15,9 +14,8 @@ interface IERC20ASG is IERC20 {
 
     //// @notice returns current price per unit
     function currentPrice() external view returns (uint256);
-    
+
     //// @notice returns cost for mint for amount at called block
     //// @param amt_ amount of units to calculate price for
     function mintCost(uint256 amt_) external view returns (uint256);
-
 }
