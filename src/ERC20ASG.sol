@@ -4,12 +4,12 @@ pragma solidity 0.8.19;
 import {IERC20ASG} from "./IERC20ASG.sol";
 import {ERC20} from "openzeppelin-contracts/token/ERC20/ERC20.sol";
 
-//// @notice ERC20GM: Fungible, Governable, Mintable Token
+//// @notice ERC20GM: Fungible, Uncapped ETH Dutch Auction
 contract ERC20ASG is ERC20, IERC20ASG {
     //// price amount
     uint256 immutable price;
     uint256 immutable initTime;
-    uint256 pps;
+    uint256 immutable pps;
 
     ////////////////// Errors
 
@@ -22,7 +22,7 @@ contract ERC20ASG is ERC20, IERC20ASG {
     //// @param name_ wanted name of token
     //// @param symbol_ wanted symbol of token
     //// @param price_ wanted starting price in gwei
-    //// @param pps_ wanted increase in gwei per second
+    //// @param pps_ wanted linear price increase in gwei per second
     constructor(
         string memory name_,
         string memory symbol_,
@@ -31,7 +31,7 @@ contract ERC20ASG is ERC20, IERC20ASG {
         address[] memory initMintAddrs_,
         uint256[] memory initMintAmts_
     ) ERC20(name_, symbol_) {
-        price = price_ == 0 ? ((uint256(uint160(bytes20(address(this))) % 10)) * 1 gwei) : price_ * 1 gwei;
+        price = price_ == 0 ? ((uint256(uint160(bytes20(address(this))) % 10)) + 1 gwei) : price_ * 1 gwei;
         pps = pps_ == 0 ? 1 gwei : pps_ * 1 gwei;
         initTime = block.timestamp;
 
@@ -55,7 +55,7 @@ contract ERC20ASG is ERC20, IERC20ASG {
 
     //// @inheritdoc IERC20GM
     function burn(uint256 howMany_) external {
-        uint256 amount = (address(this).balance * howMany_ / totalSupply());
+        uint256 amount = burnReturns(howMany_);
         _burn(msg.sender, howMany_);
         (bool s,) = msg.sender.call{value: amount}("");
         if (!s) revert BurnRefundF();
@@ -69,4 +69,9 @@ contract ERC20ASG is ERC20, IERC20ASG {
     function mintCost(uint256 amt_) public view returns (uint256) {
         return currentPrice() * amt_;
     }
+
+    function burnReturns(uint256 amt_) public view returns (uint256) {
+        if (totalSupply() > 0 ) return address(this).balance * amt_  / totalSupply();
+    }
+
 }

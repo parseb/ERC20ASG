@@ -8,14 +8,18 @@ interface IERC20ASG is IERC20 {
     //// @param howMany_ number of tokens wanted
     function mint(uint256 howMany_) external payable;
 
-    //// @notice burns amount provided sender has balanace. returns calculated
+    //// @notice burns amount provided sender has balanace. returns coresponding available value.
     //// @param howMany_ amount to burn
     function burn(uint256 howMany_) external;
 
     //// @notice returns current price per unit
     function currentPrice() external view returns (uint256);
 
-    //// @notice returns cost for mint for amount at called block
+    //// @notice returns cost for mint for amount at current block
     //// @param amt_ amount of units to calculate price for
     function mintCost(uint256 amt_) external view returns (uint256);
+
+    //// @notice returns cost for burn for given amount at current block
+    //// @param amt_ amount of units to calculate price for
+    function burnReturns(uint256 amt_) external view returns (uint256);
 }
