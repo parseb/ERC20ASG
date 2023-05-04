@@ -20,7 +20,6 @@ contract Stage is Test {
         return address(new ERC20ASG("Linear Valuable Token", "LVT", 1, 1, beneficiaries, amounts));
     }
 
-
     function InitDefaultWithPrice(uint256 p_, address[] memory beneficiaries_, uint256[] memory amounts_)
         public
         returns (address)

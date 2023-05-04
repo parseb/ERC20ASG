@@ -71,7 +71,6 @@ contract ERC20ASG is ERC20, IERC20ASG {
     }
 
     function burnReturns(uint256 amt_) public view returns (uint256) {
-        if (totalSupply() > 0 ) return address(this).balance * amt_  / totalSupply();
+        if (totalSupply() > 0) return address(this).balance * amt_ / totalSupply();
     }
-
 }

@@ -7,9 +7,11 @@ import "./utils/Stage.sol";
 
 contract GMinitTest is Test, Stage {
     IERC20ASG iGM;
-    IERC20ASG defaultASG; /// 1 gwei initial price / 1 gwei price increase per second
+    IERC20ASG defaultASG;
+    /// 1 gwei initial price / 1 gwei price increase per second
+
     function setUp() public {
-        defaultASG = IERC20ASG( InitDefaultInstance());
+        defaultASG = IERC20ASG(InitDefaultInstance());
     }
 
     function testIsInit() public {
@@ -38,24 +40,22 @@ contract GMinitTest is Test, Stage {
         assertTrue(address(iGM).code.length > 0, "codesize is 0");
     }
 
-
     function testDefaultPrice() public {
-        
         assertTrue(defaultASG.mintCost(1) == 1 gwei, "not 1 = 1, for t0");
         assertTrue(defaultASG.mintCost(2) == 2 gwei, "not 2 = 2, for t0");
-        vm.warp(block.timestamp + 1); 
+        vm.warp(block.timestamp + 1);
         assertTrue(defaultASG.mintCost(1) == 2 gwei, "not 2, for t+1");
 
         assertTrue(defaultASG.currentPrice() == 2 gwei);
-        assertTrue(defaultASG.burnReturns(1) == 0 );
-        
+        assertTrue(defaultASG.burnReturns(1) == 0);
+
         deal(address(99), 200 gwei);
 
         vm.prank(address(99));
         vm.expectRevert();
         defaultASG.mint(100);
         vm.prank(address(99));
-        defaultASG.mint{value:200 gwei}(100);
+        defaultASG.mint{value: 200 gwei}(100);
 
         assertTrue(defaultASG.balanceOf(address(99)) == 100);
 
@@ -66,12 +66,11 @@ contract GMinitTest is Test, Stage {
         console.log(defaultASG.burnReturns(1));
         assertTrue(defaultASG.burnReturns(1) == 2 gwei);
 
-        uint b1 = address(99).balance;
-        uint a1 = address(defaultASG).balance;
+        uint256 b1 = address(99).balance;
+        uint256 a1 = address(defaultASG).balance;
         vm.prank(address(99));
         defaultASG.burn(100);
 
         assertTrue(address(99).balance - b1 == a1 - address(defaultASG).balance, "simple burn balance");
-        
-     }
+    }
 }
