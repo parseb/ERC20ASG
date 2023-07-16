@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
+pragma solidity 0.8.18;
 
 import {IERC20ASG} from "./IERC20ASG.sol";
-import {ERC20} from "openzeppelin-contracts/token/ERC20/ERC20.sol";
+import {ERC20} from "openzeppelin/token/ERC20/ERC20.sol";
+
+import "forge-std/console.sol";
 
 //// @notice ERC20GM: Fungible, Uncapped ETH Dutch Auction
 contract ERC20ASG is ERC20, IERC20ASG {
     //// price amount
     uint256 immutable price;
-    uint256 immutable initTime;
-    uint256 immutable pps;
+    uint256 immutable  public initTime;
+    uint256 immutable public pps;
 
     ////////////////// Errors
 
@@ -54,15 +56,15 @@ contract ERC20ASG is ERC20, IERC20ASG {
     }
 
     //// @inheritdoc IERC20GM
-    function burn(uint256 howMany_) external {
-        uint256 amount = burnReturns(howMany_);
+    function burn(uint256 howMany_) internal  returns (uint256 amtValReturned) {
+         amtValReturned = burnReturns(howMany_);
         _burn(msg.sender, howMany_);
-        (bool s,) = msg.sender.call{value: amount}("");
+        (bool s,) = msg.sender.call{value: amtValReturned}("");
         if (!s) revert BurnRefundF();
     }
 
     //// @notice returns current price per unit
-    function currentPrice() public view returns (uint256) {
+    function currentPrice() public view returns (uint256 ) {
         return (price + (pps * (block.timestamp - initTime)));
     }
 
@@ -71,6 +73,7 @@ contract ERC20ASG is ERC20, IERC20ASG {
     }
 
     function burnReturns(uint256 amt_) public view returns (uint256) {
-        if (totalSupply() > 0) return address(this).balance * amt_ / totalSupply();
+        console.log(address(this).balance);
+        if (totalSupply() > 0) return amt_ * address(this).balance  / totalSupply();
     }
 }
