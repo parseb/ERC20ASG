@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity 0.8.19;
+pragma solidity 0.8.18;
 
-import {IERC20} from "openzeppelin-contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "../../openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 interface IERC20ASG is IERC20 {
     //// @notice mints specified amount to msg.sender requires corresponding value
@@ -10,7 +10,7 @@ interface IERC20ASG is IERC20 {
 
     //// @notice burns amount provided sender has balanace. returns coresponding available value.
     //// @param howMany_ amount to burn
-    function burn(uint256 howMany_) external;
+    // function burn(uint256 howMany_)  external  returns (uint256 amtValReturned);
 
     //// @notice returns current mint price per full unit
     function currentPrice() external view returns (uint256);
