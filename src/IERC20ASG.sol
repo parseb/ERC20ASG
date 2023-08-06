@@ -12,14 +12,19 @@ interface IERC20ASG is IERC20 {
     //// @param howMany_ amount to burn
     function burn(uint256 howMany_) external;
 
-    //// @notice returns current price per unit
+    //// @notice returns current mint price per full unit
     function currentPrice() external view returns (uint256);
 
     //// @notice returns cost for mint for amount at current block
     //// @param amt_ amount of units to calculate price for
     function mintCost(uint256 amt_) external view returns (uint256);
 
-    //// @notice returns cost for burn for given amount at current block
-    //// @param amt_ amount of units to calculate price for
+    //// @notice returns amount of ETH refunded for burining the provided amount
+    //// @param amt_ amount to calculate refund from expressed as a full, non-fractionable unit (1e18)
     function burnReturns(uint256 amt_) external view returns (uint256);
+
+    ////  @param howMany_ how many of full units to burn expressed as full units (1e18 min)
+    //// @param  to_  address to send refund to
+    //// @dev note that only full units are supported and full unit burn wrapper might be needed for fractional burn
+    function burnTo(uint256 howMany_, address to_) external;
 }

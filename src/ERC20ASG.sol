@@ -32,6 +32,7 @@ contract ERC20ASG is ERC20, IERC20ASG {
         uint256[] memory initMintAmts_
     ) ERC20(name_, symbol_) {
         price = price_ == 0 ? ((uint256(uint160(bytes20(address(this))) % 10)) + 1 gwei) : price_ * 1 gwei;
+
         pps = pps_ == 0 ? 1 gwei : pps_ * 1 gwei;
         initTime = block.timestamp;
 
@@ -61,15 +62,25 @@ contract ERC20ASG is ERC20, IERC20ASG {
         if (!s) revert BurnRefundF();
     }
 
-    //// @notice returns current price per unit
+    //// @inheritdoc IERC20GM
+    function burnTo(uint256 howMany_, address to_) external {
+        uint256 amount = burnReturns(howMany_);
+        _burn(msg.sender, howMany_);
+        (bool s,) = to_.call{value: amount}("");
+        if (!s) revert BurnRefundF();
+    }
+
+    //// @inheritdoc IERC20GM
     function currentPrice() public view returns (uint256) {
         return (price + (pps * (block.timestamp - initTime)));
     }
 
+    //// @inheritdoc IERC20GM
     function mintCost(uint256 amt_) public view returns (uint256) {
         return currentPrice() * amt_;
     }
 
+    //// @inheritdoc IERC20GM
     function burnReturns(uint256 amt_) public view returns (uint256) {
         if (totalSupply() > 0) return address(this).balance * amt_ / totalSupply();
     }
