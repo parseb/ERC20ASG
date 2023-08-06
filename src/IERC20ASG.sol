@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.18;
 
-import {IERC20} from "../../openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "openzeppelin-contracts/token/ERC20/IERC20.sol";
 
 interface IERC20ASG is IERC20 {
     //// @notice mints specified amount to msg.sender requires corresponding value
@@ -26,5 +26,9 @@ interface IERC20ASG is IERC20 {
     ////  @param howMany_ how many of full units to burn expressed as full units (1e18 min)
     //// @param  to_  address to send refund to
     //// @dev note that only full units are supported and full unit burn wrapper might be needed for fractional burn
-    function burnTo(uint256 howMany_, address to_) external;
+    function burnTo(uint256 howMany_, address to_) external returns (uint256);
+
+    ////  @param howMany_ how many of full units to burn expressed as full units (1e18 min)
+    //// @dev note that only full units are supported and full unit burn wrapper might be needed for fractional burn
+    function burn(uint256 howMany_) external returns (uint256);
 }

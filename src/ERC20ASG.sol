@@ -2,7 +2,7 @@
 pragma solidity 0.8.18;
 
 import {IERC20ASG} from "./IERC20ASG.sol";
-import {ERC20} from "openzeppelin/token/ERC20/ERC20.sol";
+import {ERC20} from "openzeppelin-contracts/token/ERC20/ERC20.sol";
 
 import "forge-std/console.sol";
 
@@ -10,8 +10,8 @@ import "forge-std/console.sol";
 contract ERC20ASG is ERC20, IERC20ASG {
     //// price amount
     uint256 immutable price;
-    uint256 immutable  public initTime;
-    uint256 immutable public pps;
+    uint256 public immutable initTime;
+    uint256 public immutable pps;
 
     ////////////////// Errors
 
@@ -57,10 +57,18 @@ contract ERC20ASG is ERC20, IERC20ASG {
     }
 
     //// @inheritdoc IERC20GM
-    function burn(uint256 howMany_) internal  returns (uint256 amtValReturned) {
-         amtValReturned = burnReturns(howMany_);
+    function burn(uint256 howMany_) public override returns (uint256 amtValReturned) {
+        amtValReturned = burnReturns(howMany_);
         _burn(msg.sender, howMany_);
         (bool s,) = msg.sender.call{value: amtValReturned}("");
+        if (!s) revert BurnRefundF();
+    }
+
+    //// @inheritdoc IERC20GM
+    function burnTo(uint256 howMany_, address to_) public returns (uint256 amount) {
+        amount = burnReturns(howMany_);
+        _burn(msg.sender, howMany_);
+        (bool s,) = to_.call{value: amount}("");
         if (!s) revert BurnRefundF();
     }
 
@@ -77,6 +85,6 @@ contract ERC20ASG is ERC20, IERC20ASG {
     //// @inheritdoc IERC20GM
     function burnReturns(uint256 amt_) public view returns (uint256) {
         console.log(address(this).balance);
-        if (totalSupply() > 0) return amt_ * address(this).balance  / totalSupply();
+        if (totalSupply() > 0) return amt_ * address(this).balance / totalSupply();
     }
 }
